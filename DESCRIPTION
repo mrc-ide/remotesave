@@ -17,5 +17,6 @@ Imports:
     ids,
     redux
 Suggests:
+    shiny,
     testthat
 RoxygenNote: 6.1.1
