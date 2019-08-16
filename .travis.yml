@@ -1,0 +1,14 @@
+language: r
+cache: packages
+addons:
+  apt:
+    packages:
+      - libapparmor-dev
+      - libhiredis-dev
+      - redis-server
+services:
+  - redis-server
+r_packages:
+  - covr
+after_success:
+  - Rscript -e 'covr::codecov(quiet = FALSE)'

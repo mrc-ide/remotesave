@@ -1,0 +1,19 @@
+Package: remotesave
+Title: Save State Remotely
+Version: 0.0.1
+Authors@R:
+    c(person(given = "Rich",
+             family = "FitzJohn",
+             role = c("aut", "cre"),
+             email = "rich.fitzjohn@gmail.com"))
+Author: Rich FitzJohn
+Maintainer: Rich FitzJohn <rich.fitzjohn@gmail.com>
+Description: Saves arbitrary state remotely to a 'Redis' server.  Designed for use within shiny applications, but possibly more general.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports:
+    redux
+Suggests:
+    testthat
+RoxygenNote: 6.1.1
