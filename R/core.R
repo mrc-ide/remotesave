@@ -21,16 +21,30 @@ R6_remote_save <- R6::R6Class(
       private$con <- con
       private$root <- root
       private$user <- user
-      private$session <- session %||% ids::random_id()
-      private$keys <- remote_save_keys(root, user, private$session)
+      self$new_session(session)
+    },
+
+    info = function() {
+      list(host = private$con$config()$host,
+           root = private$root,
+           user = private$user,
+           session = private$session)
+    },
+
+    ## TODO: support 'parent' here
+    new_session = function(id = NULL) {
+      private$session <- id %||% ids::random_id()
+      private$keys <-
+        remote_save_keys(private$root, private$user, private$session)
     },
 
     save = function(value, label = NULL) {
       time <- format(Sys.time(), "%Y-%m-%d %H:%M:%OS6")
       data <- serialize(value, NULL, xdr = FALSE, version = 3)
-      value <- list(time = time,
-                    label = label %||% "",
-                    value = data)
+      if (is.null(label) || is.na(label)) {
+        label <- ""
+      }
+      value <- list(time = time, label = label, value = data)
       invisible(private$con$HMSET(private$keys$latest, names(value), value))
     },
 
@@ -61,6 +75,13 @@ R6_remote_save <- R6::R6Class(
 
     delete_user = function() {
       invisible(redux::scan_del(private$con, private$keys$pattern))
+    },
+
+    delete_sessions = function(sessions) {
+      if (length(sessions) > 0L) {
+        keys <- sprintf(private$keys$fmt, sessions)
+        invisible(private$con$DEL(keys))
+      }
     },
 
     last = function() {

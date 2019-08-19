@@ -66,3 +66,45 @@ test_that("save - 2 sessions", {
   remote1$delete_user()
   expect_equal(remote1$list(), d1[integer(0), ])
 })
+
+
+test_that("save works with empty label", {
+  user <- ids::random_id(bytes = 4)
+  session <- ids::random_id(bytes = 4)
+  remote <- remote_save(TEST_ROOT, user, session = session)
+
+  cmp <- data_frame(session = session, label = "")
+
+  remote$save(mtcars, "")
+  expect_equal(remote$list()[c("session", "label")], cmp)
+
+  remote$save(mtcars, NA)
+  expect_equal(remote$list()[c("session", "label")], cmp)
+
+  remote$save(mtcars, NULL)
+  expect_equal(remote$list()[c("session", "label")], cmp)
+})
+
+
+test_that("info", {
+  user <- ids::random_id(bytes = 4)
+  session <- ids::random_id(bytes = 4)
+  remote <- remote_save(TEST_ROOT, user, session = session)
+  expect_equal(
+    remote$info(),
+    list(host = "127.0.0.1", root = TEST_ROOT, user = user, session = session))
+})
+
+
+test_that("delete sessions", {
+  user <- ids::random_id(bytes = 4)
+  session1 <- ids::random_id(bytes = 4)
+  session2 <- ids::random_id(bytes = 4)
+  remote1 <- remote_save(TEST_ROOT, user, session = session1)
+  remote2 <- remote_save(TEST_ROOT, user, session = session2)
+  remote1$save(mtcars, "label1")
+  remote2$save(iris, "label2")
+  sessions <- c(session1, session2)
+  remote1$delete_sessions(sessions)
+  expect_equal(nrow(remote1$list()), 0)
+})
