@@ -35,7 +35,7 @@ test_that("save and retrieve", {
   expect_equal(remote$fetch(session), mtcars)
   last <- remote$last()
   expect_is(last, "character")
-  expect_equal(last, remote$list()$time)
+  expect_equal(last, remote$list(include_current = TRUE)$time)
 })
 
 
@@ -48,23 +48,29 @@ test_that("save - 2 sessions", {
   remote1$save(mtcars, "label1")
   remote2$save(iris, "label2")
 
-  d1 <- remote1$list()
-  expect_equal(d1$session, c(session1, session2))
-  expect_equal(d1$label, c("label1", "label2"))
-  expect_equal(d1$current, c(TRUE, FALSE))
-  expect_is(d1$time, "character")
-  expect_true(d1$time[[1]] < d1$time[[2]])
+  expect_equal(
+    remote1$list()[2:4],
+    data_frame(session = session2, current = FALSE, label = "label2"))
+  expect_equal(
+    remote2$list()[2:4],
+    data_frame(session = session1, current = FALSE, label = "label1"))
 
-  d2 <- remote2$list()
-  expect_equal(d2$current, !d1$current)
-  d2$current <- d1$current
-  expect_equal(d1, d2)
+  d <- remote1$list(include_current = TRUE)
+  expect_equal(d$session, c(session2, session1))
+  expect_equal(d$label, c("label2", "label1"))
+  expect_equal(d$current, c(FALSE, TRUE))
+  expect_true(d$time[[1]] > d$time[[2]])
 
-  remote1$delete()
+  expect_equal(remote1$list(include_current = TRUE, oldest_first = TRUE),
+               d[2:1, ], check.attributes = FALSE)
 
-  expect_equal(remote1$list(), d1[2, ], check.attributes = FALSE)
+  remote2$delete()
+  expect_equal(remote1$list(), d[integer(0), ])
+  expect_equal(remote1$list(include_current = TRUE), d[2, ],
+               check.attributes = FALSE)
+
   remote1$delete_user()
-  expect_equal(remote1$list(), d1[integer(0), ])
+  expect_equal(remote1$list(include_current = TRUE), d[integer(0), ])
 })
 
 
@@ -76,13 +82,13 @@ test_that("save works with empty label", {
   cmp <- data_frame(session = session, label = "")
 
   remote$save(mtcars, "")
-  expect_equal(remote$list()[c("session", "label")], cmp)
+  expect_equal(remote$list(include_current = TRUE)[c("session", "label")], cmp)
 
   remote$save(mtcars, NA)
-  expect_equal(remote$list()[c("session", "label")], cmp)
+  expect_equal(remote$list(include_current = TRUE)[c("session", "label")], cmp)
 
   remote$save(mtcars, NULL)
-  expect_equal(remote$list()[c("session", "label")], cmp)
+  expect_equal(remote$list(include_current = TRUE)[c("session", "label")], cmp)
 })
 
 
@@ -106,5 +112,5 @@ test_that("delete sessions", {
   remote2$save(iris, "label2")
   sessions <- c(session1, session2)
   remote1$delete_sessions(sessions)
-  expect_equal(nrow(remote1$list()), 0)
+  expect_equal(nrow(remote1$list(include_current = TRUE)), 0)
 })

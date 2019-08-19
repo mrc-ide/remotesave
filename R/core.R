@@ -48,16 +48,24 @@ R6_remote_save <- R6::R6Class(
       invisible(private$con$HMSET(private$keys$latest, names(value), value))
     },
 
-    list = function() {
+    list = function(oldest_first = FALSE, include_current = FALSE) {
       found <- redux::scan_find(private$con, private$keys$pattern)
       time <- vcapply(found, function(x) private$con$HGET(x, "time"))
       label <- vcapply(found, function(x)
         private$con$HGET(x, "label") %||% NA_character_)
       session <- sub(private$keys$re, "\\1", found)
-      i <- order(vnapply(time, function(x) as.numeric(as.POSIXct(x))))
+      current <- session == private$session
+      i <- order(vnapply(time, function(x) as.numeric(as.POSIXct(x))),
+                 decreasing = TRUE)
+      if (oldest_first) {
+        i <- rev(i)
+      }
+      if (!include_current) {
+        i <- i[!current[i]]
+      }
       ret <- data_frame(key = found[i],
                         session = session[i],
-                        current = session[i] == private$session,
+                        current = current[i],
                         label = label[i],
                         time = time[i])
       rownames(ret) <- NULL
