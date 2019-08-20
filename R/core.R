@@ -41,10 +41,7 @@ R6_remote_save <- R6::R6Class(
     save = function(value, label = NULL) {
       time <- format(Sys.time(), "%Y-%m-%d %H:%M:%OS6")
       data <- serialize(value, NULL, xdr = FALSE, version = 3)
-      if (is.null(label) || is.na(label)) {
-        label <- ""
-      }
-      value <- list(time = time, label = label, value = data)
+      value <- list(time = time, label = safe_label(label), value = data)
       invisible(private$con$HMSET(private$keys$latest, names(value), value))
     },
 
@@ -104,4 +101,12 @@ remote_save_keys <- function(root, user, session) {
        pattern = sprintf("%s:%s:%s:latest", root, user, "*"),
        fmt = sprintf("%s:%s:%s:latest", root, user, "%s"),
        re = sprintf("^%s:%s:%s:latest$", root, user, "([^:]+)"))
+}
+
+
+safe_label <- function(label) {
+  if (is.null(label) || is.na(label)) {
+    label <- ""
+  }
+  label
 }
