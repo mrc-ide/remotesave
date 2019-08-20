@@ -1,3 +1,5 @@
+devtools::load_all()
+
 ui <- fluidPage(
   shiny::titlePanel("Example app"),
   shiny::sidebarLayout(
@@ -11,10 +13,25 @@ ui <- fluidPage(
     shiny::mainPanel(
       shiny::plotOutput("plot"))),
   shiny::div(
-    shiny::hr()))
+    shiny::hr(),
+    remotesave::mod_remotesave_ui("save")))
 
 
 server <- function(input, output, session) {
+  remote <- remote_save(TEST_ROOT, "user")
+
+  get_state <- function() {
+    list(a = input$a, b = input$b, c = input$c)
+  }
+  set_state <- function(state) {
+    shiny::updateNumericInput(session, "a", value = state$a)
+    shiny::updateNumericInput(session, "b", value = state$b)
+    shiny::updateNumericInput(session, "c", value = state$c)
+  }
+
+  save <- shiny::callModule(
+    remotesave::mod_remotesave_server, "save", remote, get_state, set_state)
+
   shiny::observeEvent(
     input$random, {
       shiny::updateNumericInput(session, "a", value = runif(1))
@@ -31,15 +48,6 @@ server <- function(input, output, session) {
     }
   })
 
-  get_state <- function() {
-    list(a = input$a, b = input$b, c = input$c)
-  }
-
-  set_state <- function(state) {
-    shiny::updateNumericInput(session, "a", value = state$a)
-    shiny::updateNumericInput(session, "b", value = state$b)
-    shiny::updateNumericInput(session, "c", value = state$c)
-  }
 
   list(get_state = get_state,
        set_state = set_state)
