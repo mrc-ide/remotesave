@@ -22,7 +22,7 @@ cookies_process <- function(str) {
     str <- ""
   }
   dat <- strsplit(strsplit(as.character(str), "; ")[[1]], "=")
-  setNames(lapply(dat, "[[", 2L), vapply(dat, "[[", "", 1L))
+  set_names(lapply(dat, "[[", 2L), vapply(dat, "[[", "", 1L))
 }
 
 

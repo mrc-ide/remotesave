@@ -33,3 +33,9 @@ with_success <- function(expr) {
     successful(expr),
     error = function(e) unsuccessful(e$message))
 }
+
+
+set_names <- function(x, nms) {
+  names(x) <- nms
+  x
+}

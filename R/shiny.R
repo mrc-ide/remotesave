@@ -52,7 +52,8 @@ mod_remotesave_server <- function(input, output, session,
 
   shiny::observeEvent(
     input$delete, {
-      remote$delete_sessions(rv$list$session[input$list_rows_selected])
+      sessions <- rv$list$session[input$list_rows_selected]
+      rv$remote$value$delete_sessions(sessions)
       rv$list <- rv$remote$value$list()
     })
 
@@ -109,10 +110,10 @@ remotesave_result_status <- function(result) {
 
 
 remotesave_load <- function(row, list, remote, set_state) {
-  if (is.null(row) || is.na(row)) {
-    remotesave_load_error("No row is selected")
-  } else if (length(row) > 1) {
+  if (length(row) > 1) {
     remotesave_load_error("More than one row selected")
+  } else if (is.null(row) || is.na(row)) {
+    remotesave_load_error("No row is selected")
   } else {
     set_state(remote$fetch(list$session[[row]]))
     remotesave_load_success(as.list(list[row, ]))
