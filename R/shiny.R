@@ -184,13 +184,13 @@ remotesave_ui <- function(render, ns) {
 remotesave_remote <- function(root, user, ...) {
   ## This needs some work...
   if (inherits(root, "error")) {
-    return(unsuccessful(root))
+    return(unsuccessful(root$message))
   }
   if (is.null(root)) {
     return(unsuccessful("Auto-save root not ready"))
   }
   if (inherits(user, "error")) {
-    return(unsuccessful(user))
+    return(unsuccessful(user$message))
   }
   if (is.null(user)) {
     return(unsuccessful("Auto-save user not ready"))

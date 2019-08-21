@@ -50,7 +50,6 @@ server <- function(input, output, session) {
     }
   })
 
-
   list(get_state = get_state,
        set_state = set_state)
 }
