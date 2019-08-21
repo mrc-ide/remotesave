@@ -18,7 +18,8 @@ ui <- fluidPage(
 
 
 server <- function(input, output, session) {
-  remote <- remote_save(TEST_ROOT, "user")
+  root <- shiny::reactive(TEST_ROOT)
+  user <- shiny::reactive("user")
 
   get_state <- function() {
     list(a = input$a, b = input$b, c = input$c)
@@ -30,7 +31,8 @@ server <- function(input, output, session) {
   }
 
   save <- shiny::callModule(
-    remotesave::mod_remotesave_server, "save", remote, get_state, set_state)
+    remotesave::mod_remotesave_server, "save",
+    root, user, get_state, set_state)
 
   shiny::observeEvent(
     input$random, {

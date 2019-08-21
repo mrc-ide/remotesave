@@ -16,3 +16,20 @@ vnapply <- function(X, FUN, ...) {
 data_frame <- function(...) {
   data.frame(..., stringsAsFactors = FALSE)
 }
+
+
+unsuccessful <- function(x) {
+  list(success = FALSE, value = NULL, error = x)
+}
+
+
+successful <- function(x) {
+  list(success = TRUE, value = x, error = NULL)
+}
+
+
+with_success <- function(expr) {
+  tryCatch(
+    successful(expr),
+    error = function(e) unsuccessful(e$message))
+}
