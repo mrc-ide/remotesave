@@ -16,8 +16,8 @@ Imports:
     DT,
     R6,
     ids,
-    redux
-    shiny,
+    redux,
+    shiny
 Suggests:
     testthat
 RoxygenNote: 6.1.1
