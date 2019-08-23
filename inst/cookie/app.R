@@ -2,7 +2,7 @@ devtools::load_all()
 
 ui <- shiny::fluidPage(
   shiny::titlePanel("Example app"),
-  mod_cookies_ui("cookies"),
+  remotesave::mod_cookies_ui("cookies"),
   shiny::sidebarLayout(
     shiny::sidebarPanel(
       shiny::numericInput("a", "a", NULL),
@@ -22,7 +22,8 @@ server <- function(input, output, session) {
   rv <- shiny::reactiveValues()
   name <- "myapp"
   valid <- 0.1
-  cookies <- shiny::callModule(mod_cookies_server, "cookies", name, valid)
+  cookies <- shiny::callModule(
+    remotesave::mod_cookies_server, "cookies", name, valid)
 
   root <- shiny::reactive(TEST_ROOT)
   user <- shiny::reactive(cookies$value())
