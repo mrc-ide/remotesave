@@ -32,7 +32,7 @@ mod_remotesave_ui <- function(id) {
 ##'
 ##' @param period The period, in seconds, to save.  This is
 ##'   approximate, and is implemented using
-##'   \code{shiny::invalidateLater}.
+##'   \code{shiny::throttle}.
 ##' @export
 mod_remotesave_server <- function(input, output, session,
                                   root, user, get_state, set_state, ...,
@@ -87,12 +87,15 @@ mod_remotesave_server <- function(input, output, session,
       rv$list <- rv$remote$value$list()
     })
 
+
+  label <- shiny::debounce(shiny::reactive(input$label), 500)
+  state <- shiny::throttle(shiny::reactive(get_state()), period * 1000)
+
   shiny::observe({
     if (isTRUE(rv$remote$success)) {
-      label <- shiny::debounce(shiny::reactive(input$label), 1000)()
-      rv$remote$value$save(get_state(), label)
-      shiny::invalidateLater(period * 1000)
-      rv$last_save <- list(time = Sys.time(), label = label)
+      lab <- label()
+      rv$remote$value$save(state(), lab)
+      rv$last_save <- list(time = Sys.time(), label = lab)
     }
   })
 }

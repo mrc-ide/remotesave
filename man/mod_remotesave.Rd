@@ -34,7 +34,7 @@ state.  Any return value is ignored.}
 
 \item{period}{The period, in seconds, to save.  This is
 approximate, and is implemented using
-\code{shiny::invalidateLater}.}
+\code{shiny::throttle}.}
 }
 \description{
 A shiny module for saving state into a remote redis server
