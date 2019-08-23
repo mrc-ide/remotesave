@@ -58,9 +58,6 @@ mod_remotesave_server <- function(input, output, session,
       options = list(paging = FALSE, dom = "t", searching = FALSE)))
 
   proxy <- DT::dataTableProxy("list")
-  shiny::observeEvent(
-    input$refresh,
-    rv$list <- rv$remote$value$list())
 
   shiny::observe(DT::replaceData(proxy, rv$list[c("time", "label")]))
 
@@ -193,9 +190,6 @@ remotesave_ui <- function(render, ns) {
           shiny::actionButton(
             ns("load"), "Load",
             icon = shiny::icon("check"), class = "btn-primary"),
-          shiny::actionButton(
-            ns("refresh"), "Refresh",
-            icon = shiny::icon("refresh"), class = "btn-info"),
           shiny::actionButton(
             ns("delete"), "Delete",
             icon = shiny::icon("times"), class = "btn-danger"),
