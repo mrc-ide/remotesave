@@ -1,6 +1,6 @@
 Package: remotesave
 Title: Save State Remotely
-Version: 0.0.1
+Version: 0.0.2
 Authors@R:
     c(person(given = "Rich",
              family = "FitzJohn",
@@ -13,11 +13,11 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
+    DT,
     R6,
     ids,
     redux
-Suggests:
-    DT,
     shiny,
+Suggests:
     testthat
 RoxygenNote: 6.1.1
