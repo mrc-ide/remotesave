@@ -1,3 +1,17 @@
+##' Remotely save state
+##' @title Remotely save state
+##'
+##' @param root The root within the redis server to save state at
+##'
+##' @param user The username (will be appended to the root)
+##'
+##' @param url The url for the redis server - optional, and using the
+##'   \code{REDIS_URL} environment variable may be preferable
+##'
+##' @param session An optional session id as a string.  If missing
+##'   then a random string will be used.
+##'
+##' @export
 remote_save <- function(root, user, url = NULL, session = NULL) {
   R6_remote_save$new(root, user, url, session)
 }

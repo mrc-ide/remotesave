@@ -1,9 +1,39 @@
+##' A shiny module for saving state into a remote redis server
+##' @title Remote saving shiny module
+##' @param id An id used to namespace the shiny module
+##' @export
+##' @rdname mod_remotesave
 mod_remotesave_ui <- function(id) {
   ns <- shiny::NS(id)
   shiny::uiOutput(ns("ui"))
 }
 
 
+##' @rdname mod_remotesave
+##'
+##' @param input,output,session Arguments to shiny
+##'
+##' @param root A reactive indicating the root of the remote save (see
+##'   \code{\link{remote_save}}
+##'
+##' @param user A reactive value indicating the user name for the
+##'   remote save (\code{\link{remote_save}})
+##'
+##' @param get_state A function that takes no arguments and returns
+##'   the application state as an arbitrary R object (though suitable
+##'   for serialisation, so pointers will not work)
+##'
+##' @param set_state A function that takes one argument, the state as
+##'   returned by \code{get_state}, and restores the application
+##'   state.  Any return value is ignored.
+##'
+##' @param ... Additional arguments passed to
+##'   \code{\link{remote_save}}.  Note that these cannot be reactive.
+##'
+##' @param period The period, in seconds, to save.  This is
+##'   approximate, and is implemented using
+##'   \code{shiny::invalidateLater}.
+##' @export
 mod_remotesave_server <- function(input, output, session,
                                   root, user, get_state, set_state, ...,
                                   period = 10) {

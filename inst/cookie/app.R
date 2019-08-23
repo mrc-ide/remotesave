@@ -1,6 +1,6 @@
 devtools::load_all()
 
-ui <- fluidPage(
+ui <- shiny::fluidPage(
   shiny::titlePanel("Example app"),
   mod_cookies_ui("cookies"),
   shiny::sidebarLayout(

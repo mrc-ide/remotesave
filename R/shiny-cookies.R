@@ -1,8 +1,27 @@
+##' A shiny module for working with cookies.
+##'
+##' @title Cookies shiny module
+##'
+##' @param id An id used in the shiny module, required for namespacing
+##'   even though no UI elements are created.
+##'
+##' @export
+##' @rdname mod_cookies
 mod_cookies_ui <- function(id) {
   shiny::singleton(shiny::tags$script(shiny::HTML(cookies_script())))
 }
 
 
+##' @rdname mod_cookies
+##'
+##' @param input,output,session Arguments to shiny
+##'
+##' @param name The name of the cookie to save/retrieve the username
+##'   from.  This should be globally unique and we will set this
+##'   cookie if not pesent.
+##'
+##' @param valid The period of validity of the cookie, in days.  We
+##'   will refresh the cookie if it is present.
 mod_cookies_server <- function(input, output, session, name, valid = 30) {
   session$sendCustomMessage(
     type = "updateCookie",
