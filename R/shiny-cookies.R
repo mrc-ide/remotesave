@@ -22,6 +22,7 @@ mod_cookies_ui <- function(id) {
 ##'
 ##' @param valid The period of validity of the cookie, in days.  We
 ##'   will refresh the cookie if it is present.
+##' @export
 mod_cookies_server <- function(input, output, session, name, valid = 30) {
   session$sendCustomMessage(
     type = "updateCookie",
