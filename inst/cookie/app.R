@@ -20,10 +20,12 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   rv <- shiny::reactiveValues()
-  cookies <- shiny::callModule(mod_cookies_server, "cookies")
+  name <- "myapp"
+  valid <- 0.1
+  cookies <- shiny::callModule(mod_cookies_server, "cookies", name, valid)
 
   root <- shiny::reactive(TEST_ROOT)
-  user <- shiny::reactive(cookies$get("SRVID"))
+  user <- shiny::reactive(cookies$value())
 
   get_state <- function() {
     list(a = input$a, b = input$b, c = input$c)

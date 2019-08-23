@@ -1,40 +1,36 @@
 mod_cookies_ui <- function(id) {
-  ns <- shiny::NS(id)
-  cookies_script(ns("cookies_string"))
+  shiny::singleton(shiny::tags$script(shiny::HTML(cookies_script())))
 }
 
 
-mod_cookies_server <- function(input, output, session) {
-  session$sendCustomMessage(type = "readCookies", message = list())
+mod_cookies_server <- function(input, output, session, name, valid = 30) {
+  session$sendCustomMessage(
+    type = "updateCookie",
+    message = cookies_message(name, valid, session$ns))
 
   rv <- shiny::reactiveValues(cookies = NULL)
-  shiny::observeEvent(input$cookies_string, {
-    rv$cookies <- cookies_process(input$cookies_string)
+  shiny::observeEvent(input$value, {
+    rv$value <- input$value
   })
 
-  list(all = shiny::reactive(rv$cookies),
-       get = function(name) cookies_get(rv$cookies, name))
+  list(value = shiny::reactive(cookies_get(rv$value, name)))
 }
 
 
-cookies_process <- function(str) {
-  if (length(str) == 0L) {
-    str <- ""
-  }
-  dat <- strsplit(strsplit(as.character(str), "; ")[[1]], "=")
-  set_names(lapply(dat, "[[", 2L), vapply(dat, "[[", "", 1L))
+cookies_script <- function() {
+  path <- system.file("cookie.js", package = "remotesave", mustWork = TRUE)
+  paste(readLines(path), collapse = "\n")
 }
 
 
-cookies_script <- function(id) {
-  script <- sprintf('
-      Shiny.addCustomMessageHandler("readCookies", function(message) {
-        Shiny.onInputChange("%s", document.cookie);
-      })', id)
-  shiny::tags$script(shiny::HTML(script))
+cookies_get <- function(value, name) {
+  value %||% simpleError(sprintf("Cookie '%s' not found", name))
 }
 
 
-cookies_get <- function(list, name) {
-  list[[name]] %||% simpleError(sprintf("Cookie '%s' not found", name))
+cookies_message <- function(name, valid, ns) {
+  list(name = name,
+       valid = valid,
+       input = ns("value"),
+       defaultValue = ids::adjective_animal())
 }
