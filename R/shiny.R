@@ -55,7 +55,7 @@ mod_remotesave_server <- function(input, output, session,
   output$list <- DT::renderDataTable(
     DT::datatable(
       data = rv$list[c("time", "label")],
-      options = list(paging = FALSE, dom = "t", searching = FALSE)))
+      options = datatable_options(c(10, 20, 40, Inf))))
 
   proxy <- DT::dataTableProxy("list")
 
@@ -282,4 +282,24 @@ list_to_html <- function(x) {
   if (length(x) > 0L) {
     shiny::tags$ul(unname(Map(f, names(x), vcapply(x, as.character))))
   }
+}
+
+
+datatable_options <- function(len, len_default = NULL) {
+  ret <- list(searching = FALSE)
+  if (!is.null(len)) {
+    if (is.null(len_default)) {
+      len_default <- len[[1]]
+    }
+
+    if (Inf %in% len) {
+      len_string <- as.character(len)
+      len_string[len == Inf] <- "All"
+      len[len == Inf] <- -1
+      len <- list(len, len_string)
+    }
+    ret$lengthMenu <- len
+    ret$pageLength <- len_default
+  }
+  ret
 }
